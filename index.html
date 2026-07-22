@@ -1,0 +1,1595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tech Urban Conference 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --neon-purple: #8B5CF6;
+  --neon-blue: #3B82F6;
+  --neon-cyan: #06B6D4;
+  --neon-pink: #EC4899;
+  --neon-yellow: #FACC15;
+  --neon-orange: #F97316;
+  --dark-bg: #0A0A0F;
+  --dark-card: #111118;
+  --dark-surface: #1A1A24;
+  --text-primary: #F8FAFC;
+  --text-secondary: #94A3B8;
+  --text-muted: #64748B;
+  --border: rgba(255,255,255,0.08);
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--dark-bg);
+  color: var(--text-primary);
+  overflow-x: hidden;
+}
+
+/* ===== NAVBAR ===== */
+.navbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 48px;
+  background: rgba(10,10,15,0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  transition: all 0.3s ease;
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+.nav-logo-icon {
+  width: 36px; height: 36px;
+  background: linear-gradient(135deg, var(--neon-purple), var(--neon-blue));
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem;
+}
+
+.nav-links {
+  display: flex;
+  gap: 32px;
+  list-style: none;
+}
+
+.nav-links a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: color 0.2s;
+  cursor: pointer;
+}
+
+.nav-links a:hover, .nav-links a.active {
+  color: var(--neon-purple);
+}
+
+.nav-cta {
+  background: linear-gradient(135deg, var(--neon-purple), var(--neon-blue));
+  color: white;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.nav-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(139,92,246,0.35);
+}
+
+/* ===== HERO SECTION ===== */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 120px 48px 80px;
+  overflow: hidden;
+}
+
+.hero-bg-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(139,92,246,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(139,92,246,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+  -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+}
+
+.hero-glow {
+  position: absolute;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(139,92,246,0.15), transparent 70%);
+  border-radius: 50%;
+  top: 10%; right: -10%;
+  animation: float 8s ease-in-out infinite;
+}
+
+.hero-glow-2 {
+  position: absolute;
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(6,182,212,0.1), transparent 70%);
+  border-radius: 50%;
+  bottom: 10%; left: -5%;
+  animation: float 10s ease-in-out infinite reverse;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-30px) scale(1.05); }
+}
+
+.hero-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  max-width: 1400px;
+  width: 100%;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(139,92,246,0.1);
+  border: 1px solid rgba(139,92,246,0.2);
+  padding: 6px 16px;
+  border-radius: 100px;
+  font-size: 0.8rem;
+  color: var(--neon-purple);
+  margin-bottom: 24px;
+}
+
+.hero-badge-dot {
+  width: 8px; height: 8px;
+  background: var(--neon-purple);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.8); }
+}
+
+.hero-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  font-weight: 700;
+  line-height: 1.1;
+  margin-bottom: 24px;
+}
+
+.hero-title span {
+  background: linear-gradient(135deg, var(--neon-purple), var(--neon-cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-subtitle {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-bottom: 40px;
+  max-width: 500px;
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--neon-purple), var(--neon-blue));
+  color: white;
+  border: none;
+  padding: 14px 32px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+}
+
+.btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px rgba(139,92,246,0.4);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  padding: 14px 32px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-secondary:hover {
+  border-color: var(--neon-purple);
+  background: rgba(139,92,246,0.05);
+}
+
+.hero-visual {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hero-robot-ring {
+  width: 420px; height: 420px;
+  border: 2px solid rgba(139,92,246,0.2);
+  border-radius: 50%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: spin-slow 30s linear infinite;
+}
+
+.hero-robot-ring::before {
+  content: '';
+  position: absolute;
+  width: 360px; height: 360px;
+  border: 1px dashed rgba(6,182,212,0.3);
+  border-radius: 50%;
+}
+
+.hero-robot-ring::after {
+  content: '';
+  position: absolute;
+  width: 480px; height: 480px;
+  border: 1px solid rgba(139,92,246,0.1);
+  border-radius: 50%;
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.hero-robot-img {
+  width: 320px;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 40px rgba(139,92,246,0.2);
+  animation: float-robot 6s ease-in-out infinite;
+  z-index: 2;
+}
+
+@keyframes float-robot {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-15px); }
+}
+
+.hero-orbit-dot {
+  position: absolute;
+  width: 12px; height: 12px;
+  background: var(--neon-cyan);
+  border-radius: 50%;
+  box-shadow: 0 0 20px var(--neon-cyan);
+}
+
+.hero-date {
+  position: absolute;
+  bottom: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--dark-card);
+  border: 1px solid var(--border);
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.hero-date strong {
+  color: var(--neon-yellow);
+}
+
+/* ===== SECTIONS ===== */
+.section {
+  padding: 100px 48px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 64px;
+}
+
+.section-tag {
+  display: inline-block;
+  background: rgba(139,92,246,0.1);
+  color: var(--neon-purple);
+  padding: 4px 16px;
+  border-radius: 100px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 16px;
+}
+
+.section-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.section-desc {
+  color: var(--text-secondary);
+  font-size: 1.05rem;
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.7;
+}
+
+/* ===== ABOUT ===== */
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+}
+
+.about-images {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.about-img {
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+}
+
+.about-img img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  transition: transform 0.5s;
+  display: block;
+}
+
+.about-img:hover img {
+  transform: scale(1.05);
+}
+
+.about-img-overlay {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  padding: 20px;
+  background: linear-gradient(transparent, rgba(0,0,0,0.8));
+}
+
+.about-img-overlay h4 {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.about-img-overlay p {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.about-text h3 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.about-text p {
+  color: var(--text-secondary);
+  line-height: 1.8;
+  margin-bottom: 16px;
+}
+
+.about-stats {
+  display: flex;
+  gap: 32px;
+  margin-top: 32px;
+}
+
+.about-stat {
+  text-align: center;
+}
+
+.about-stat-num {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--neon-purple);
+}
+
+.about-stat-label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* ===== STATS BAR ===== */
+.stats-bar {
+  background: linear-gradient(135deg, var(--neon-purple), var(--neon-blue));
+  padding: 48px;
+  border-radius: 24px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin: 0 48px;
+  max-width: 1300px;
+  margin: 0 auto 80px;
+  position: relative;
+  overflow: hidden;
+}
+
+.stats-bar::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+.stat-item {
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.stat-num {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 3rem;
+  font-weight: 700;
+  color: white;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.7);
+  margin-top: 4px;
+}
+
+/* ===== EVENTS ===== */
+.events-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.event-card {
+  background: var(--dark-card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  overflow: hidden;
+  transition: all 0.4s;
+  cursor: pointer;
+  position: relative;
+}
+
+.event-card:hover {
+  transform: translateY(-8px);
+  border-color: rgba(139,92,246,0.3);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+}
+
+.event-card-img {
+  width: 100%;
+  height: 200px;
+  position: relative;
+  overflow: hidden;
+}
+
+.event-card-img img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.event-card-img::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 60%;
+  background: linear-gradient(transparent, var(--dark-card));
+}
+
+.event-card-content {
+  padding: 20px;
+  position: relative;
+  z-index: 1;
+  margin-top: -40px;
+}
+
+.event-card-tag {
+  display: inline-block;
+  background: rgba(139,92,246,0.15);
+  color: var(--neon-purple);
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.event-card-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.event-card-desc {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* ===== SPONSORS ===== */
+.sponsors-section {
+  background: var(--dark-card);
+  padding: 80px 48px;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.sponsors-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 40px;
+  max-width: 1200px;
+  margin: 48px auto 0;
+  align-items: center;
+}
+
+.sponsor-logo {
+  width: 100px;
+  height: 50px;
+  background: var(--dark-surface);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  transition: all 0.3s;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.sponsor-logo:hover {
+  border-color: var(--neon-purple);
+  color: var(--text-primary);
+  transform: scale(1.05);
+}
+
+/* ===== TESTIMONIALS ===== */
+.testimonials-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.testimonial-card {
+  background: var(--dark-card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 32px;
+  transition: all 0.3s;
+}
+
+.testimonial-card:hover {
+  border-color: rgba(139,92,246,0.2);
+}
+
+.testimonial-stars {
+  color: var(--neon-yellow);
+  font-size: 1rem;
+  margin-bottom: 16px;
+}
+
+.testimonial-text {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.7;
+  margin-bottom: 24px;
+}
+
+.testimonial-author {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.testimonial-avatar {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--neon-purple), var(--neon-blue));
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.testimonial-info h4 {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.testimonial-info p {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* ===== BLOG PAGE ===== */
+.blog-page {
+  display: none;
+  padding: 120px 48px 80px;
+  max-width: 1400px;
+  margin: 0 auto;
+  min-height: 100vh;
+}
+
+.blog-page.active {
+  display: block;
+}
+
+.blog-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.blog-filters {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 48px;
+  flex-wrap: wrap;
+}
+
+.blog-filter-btn {
+  background: var(--dark-card);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  padding: 8px 20px;
+  border-radius: 100px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Inter', sans-serif;
+}
+
+.blog-filter-btn:hover, .blog-filter-btn.active {
+  background: var(--neon-purple);
+  color: white;
+  border-color: var(--neon-purple);
+}
+
+.blog-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.blog-card {
+  background: var(--dark-card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  overflow: hidden;
+  transition: all 0.4s;
+  cursor: pointer;
+}
+
+.blog-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(139,92,246,0.3);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.3);
+}
+
+.blog-card-header {
+  padding: 24px 24px 0;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.blog-tag {
+  background: rgba(139,92,246,0.1);
+  color: var(--neon-purple);
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.blog-card-body {
+  padding: 16px 24px 24px;
+}
+
+.blog-card-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  line-height: 1.4;
+}
+
+.blog-card-excerpt {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  line-height: 1.6;
+  margin-bottom: 20px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.blog-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 24px 24px;
+}
+
+.blog-author {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.blog-author-avatar {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--neon-purple), var(--neon-blue));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: white;
+}
+
+.blog-author-name {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.blog-stats {
+  display: flex;
+  gap: 16px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.blog-stat {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.blog-load-more {
+  text-align: center;
+  margin-top: 48px;
+}
+
+/* ===== BLOG MODAL ===== */
+.blog-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.8);
+  backdrop-filter: blur(10px);
+  z-index: 2000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+
+.blog-modal-overlay.active {
+  display: flex;
+}
+
+.blog-modal {
+  background: var(--dark-card);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  max-width: 800px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: 40px;
+  position: relative;
+}
+
+.blog-modal-close {
+  position: absolute;
+  top: 20px; right: 20px;
+  width: 40px; height: 40px;
+  background: var(--dark-surface);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  color: var(--text-secondary);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: all 0.2s;
+}
+
+.blog-modal-close:hover {
+  background: var(--neon-purple);
+  color: white;
+}
+
+.blog-modal-tags {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.blog-modal-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.blog-modal-meta {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 24px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  flex-wrap: wrap;
+}
+
+.blog-modal-body {
+  color: var(--text-secondary);
+  line-height: 1.8;
+  font-size: 1rem;
+}
+
+.blog-modal-reactions {
+  display: flex;
+  gap: 24px;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+}
+
+.blog-reaction {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.blog-reaction.likes { color: var(--neon-pink); }
+.blog-reaction.dislikes { color: var(--text-muted); }
+
+/* ===== LOADING ===== */
+.blog-loading {
+  text-align: center;
+  padding: 80px 20px;
+  color: var(--text-muted);
+}
+
+.blog-loading-spinner {
+  width: 40px; height: 40px;
+  border: 3px solid var(--border);
+  border-top-color: var(--neon-purple);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 16px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ===== FOOTER ===== */
+.footer {
+  background: var(--dark-card);
+  border-top: 1px solid var(--border);
+  padding: 60px 48px 30px;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 48px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.footer-brand {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.footer-desc {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  line-height: 1.7;
+  margin-bottom: 24px;
+}
+
+.footer-social {
+  display: flex;
+  gap: 12px;
+}
+
+.footer-social a {
+  width: 40px; height: 40px;
+  border-radius: 10px;
+  background: var(--dark-surface);
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: all 0.2s;
+  font-size: 0.9rem;
+}
+
+.footer-social a:hover {
+  background: var(--neon-purple);
+  color: white;
+  border-color: var(--neon-purple);
+}
+
+.footer-col h4 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: var(--text-primary);
+}
+
+.footer-col a {
+  display: block;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.85rem;
+  margin-bottom: 12px;
+  transition: color 0.2s;
+}
+
+.footer-col a:hover {
+  color: var(--neon-purple);
+}
+
+.footer-bottom {
+  max-width: 1400px;
+  margin: 40px auto 0;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1024px) {
+  .hero-content { grid-template-columns: 1fr; text-align: center; }
+  .hero-subtitle { margin: 0 auto 40px; }
+  .hero-buttons { justify-content: center; }
+  .hero-visual { order: -1; }
+  .about-grid { grid-template-columns: 1fr; }
+  .events-grid { grid-template-columns: repeat(2, 1fr); }
+  .testimonials-grid { grid-template-columns: 1fr; }
+  .blog-grid { grid-template-columns: repeat(2, 1fr); }
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 768px) {
+  .navbar { padding: 16px 24px; }
+  .nav-links { display: none; }
+  .section { padding: 60px 24px; }
+  .hero { padding: 100px 24px 60px; }
+  .events-grid { grid-template-columns: 1fr; }
+  .blog-grid { grid-template-columns: 1fr; }
+  .stats-bar { flex-direction: column; gap: 24px; margin: 0 24px 60px; }
+  .footer-grid { grid-template-columns: 1fr; }
+  .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
+  .hero-robot-ring { width: 300px; height: 300px; }
+  .hero-robot-ring::before { width: 260px; height: 260px; }
+  .hero-robot-ring::after { width: 340px; height: 340px; }
+  .hero-robot-img { width: 220px; }
+  .blog-page { padding: 100px 24px 60px; }
+  .blog-modal { padding: 24px; }
+}
+
+.landing-page { display: none; }
+.landing-page.active { display: block; }
+</style>
+<base target="_blank">
+</head>
+<body>
+
+<!-- ===== NAVBAR ===== -->
+<nav class="navbar" id="navbar">
+  <a href="#" class="nav-logo" onclick="showPage('home'); return false;">
+    <div class="nav-logo-icon">&#9889;</div>
+    TechUrban
+  </a>
+  <ul class="nav-links">
+    <li><a href="#" class="active" onclick="showPage('home'); return false;" data-nav="home">Home</a></li>
+    <li><a href="#about" onclick="scrollToSection('about'); return false;">About</a></li>
+    <li><a href="#events" onclick="scrollToSection('events'); return false;">Events</a></li>
+    <li><a href="#testimonials" onclick="scrollToSection('testimonials'); return false;">Testimonials</a></li>
+    <li><a href="#" onclick="showPage('blog'); return false;" data-nav="blog">Blog</a></li>
+    <li><a href="#contact" onclick="scrollToSection('contact'); return false;">Contact</a></li>
+  </ul>
+  <button class="nav-cta" onclick="showPage('blog')">Get Tickets</button>
+</nav>
+
+<!-- ===== LANDING PAGE ===== -->
+<div class="landing-page active" id="landing-page">
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-bg-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-glow-2"></div>
+  <div class="hero-content">
+    <div class="hero-left">
+      <div class="hero-badge">
+        <span class="hero-badge-dot"></span>
+        March 15-17, 2026 &mdash; San Francisco
+      </div>
+      <h1 class="hero-title">Tech Urban<br><span>Conference</span> 2026</h1>
+      <p class="hero-subtitle">Join 3,000+ innovators, developers, and visionaries for three days of cutting-edge technology, hands-on workshops, and unforgettable networking experiences.</p>
+      <div class="hero-buttons">
+        <button class="btn-primary" onclick="showPage('blog')">
+          <span>&#127903;</span> Register Now
+        </button>
+        <button class="btn-secondary" onclick="scrollToSection('about')">Learn More</button>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="hero-robot-ring">
+        <img src="https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=600&h=700&fit=crop" alt="Futuristic Robot" class="hero-robot-img" onerror="this.src='https://images.unsplash.com/photo-1535378437327-664c860c713b?w=600&h=700&fit=crop'">
+        <div class="hero-orbit-dot" style="top:0;left:50%;transform:translate(-50%,-50%);"></div>
+        <div class="hero-orbit-dot" style="bottom:0;left:50%;transform:translate(-50%,50%);background:var(--neon-pink);"></div>
+        <div class="hero-orbit-dot" style="top:50%;left:0;transform:translate(-50%,-50%);background:var(--neon-yellow);"></div>
+        <div class="hero-orbit-dot" style="top:50%;right:0;transform:translate(50%,-50%);background:var(--neon-orange);"></div>
+      </div>
+      <div class="hero-date">
+        &#128197; <strong>March 15-17, 2026</strong> &mdash; Moscone Center, SF
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS BAR -->
+<div class="stats-bar">
+  <div class="stat-item">
+    <div class="stat-num">3,000+</div>
+    <div class="stat-label">Attendees</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">50+</div>
+    <div class="stat-label">Speakers</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">11+</div>
+    <div class="stat-label">Sponsors</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">43+</div>
+    <div class="stat-label">Investors</div>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section class="section" id="about">
+  <div class="section-header">
+    <div class="section-tag">About The Event</div>
+    <h2 class="section-title">What to Expect</h2>
+    <p class="section-desc">Three days of immersive technology experiences designed to inspire, educate, and connect the brightest minds in tech.</p>
+  </div>
+  <div class="about-grid">
+    <div class="about-images">
+      <div class="about-img">
+        <img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400&h=300&fit=crop" alt="Conference Hall">
+        <div class="about-img-overlay">
+          <h4>Keynote Stage</h4>
+          <p>World-class speakers</p>
+        </div>
+      </div>
+      <div class="about-img">
+        <img src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=400&h=300&fit=crop" alt="Networking">
+        <div class="about-img-overlay">
+          <h4>Networking Lounge</h4>
+          <p>Connect with peers</p>
+        </div>
+      </div>
+      <div class="about-img">
+        <img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=400&h=300&fit=crop" alt="Workshop">
+        <div class="about-img-overlay">
+          <h4>Hands-on Labs</h4>
+          <p>Practical learning</p>
+        </div>
+      </div>
+      <div class="about-img">
+        <img src="https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=400&h=300&fit=crop" alt="Demo">
+        <div class="about-img-overlay">
+          <h4>Live Demos</h4>
+          <p>See tech in action</p>
+        </div>
+      </div>
+    </div>
+    <div class="about-text">
+      <h3>Experience the Future of Technology</h3>
+      <p>Tech Urban Conference brings together the most innovative minds in technology for an unforgettable three-day experience. From AI and robotics to blockchain and quantum computing, explore the technologies shaping tomorrow.</p>
+      <p>Our carefully curated program includes keynote presentations from industry leaders, interactive workshops, live product demonstrations, and exclusive networking opportunities with investors and fellow innovators.</p>
+      <div class="about-stats">
+        <div class="about-stat">
+          <div class="about-stat-num">3</div>
+          <div class="about-stat-label">Days</div>
+        </div>
+        <div class="about-stat">
+          <div class="about-stat-num">50+</div>
+          <div class="about-stat-label">Sessions</div>
+        </div>
+        <div class="about-stat">
+          <div class="about-stat-num">100+</div>
+          <div class="about-stat-label">Exhibitors</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EVENTS -->
+<section class="section" id="events">
+  <div class="section-header">
+    <div class="section-tag">Program</div>
+    <h2 class="section-title">Event Highlights</h2>
+    <p class="section-desc">From hackathons to pitch sessions, discover what makes Tech Urban the must-attend conference of the year.</p>
+  </div>
+  <div class="events-grid">
+    <div class="event-card">
+      <div class="event-card-img">
+        <img src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=400&h=300&fit=crop" alt="Hackathon">
+      </div>
+      <div class="event-card-content">
+        <span class="event-card-tag">Competition</span>
+        <h3 class="event-card-title">24-Hour Hackathon</h3>
+        <p class="event-card-desc">Build innovative solutions with teams from around the world. $50K in prizes up for grabs.</p>
+      </div>
+    </div>
+    <div class="event-card">
+      <div class="event-card-img">
+        <img src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=400&h=300&fit=crop" alt="Workshops">
+      </div>
+      <div class="event-card-content">
+        <span class="event-card-tag">Learning</span>
+        <h3 class="event-card-title">Expert Workshops</h3>
+        <p class="event-card-desc">Hands-on sessions covering AI/ML, blockchain, cloud architecture, and emerging tech stacks.</p>
+      </div>
+    </div>
+    <div class="event-card">
+      <div class="event-card-img">
+        <img src="https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=400&h=300&fit=crop" alt="Seminars">
+      </div>
+      <div class="event-card-content">
+        <span class="event-card-tag">Knowledge</span>
+        <h3 class="event-card-title">Tech Seminars</h3>
+        <p class="event-card-desc">Deep-dive technical talks from engineers at Google, Meta, OpenAI, and leading startups.</p>
+      </div>
+    </div>
+    <div class="event-card">
+      <div class="event-card-img">
+        <img src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=400&h=300&fit=crop" alt="Pitch Sessions">
+      </div>
+      <div class="event-card-content">
+        <span class="event-card-tag">Startup</span>
+        <h3 class="event-card-title">Pitch Sessions</h3>
+        <p class="event-card-desc">Present your startup to 40+ VCs and angel investors. Previous editions raised $12M+ in funding.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SPONSORS -->
+<section class="sponsors-section" id="sponsors">
+  <div class="section-header">
+    <div class="section-tag">Partners</div>
+    <h2 class="section-title">Our Sponsors</h2>
+    <p class="section-desc">Proudly supported by industry leaders driving innovation forward.</p>
+  </div>
+  <div class="sponsors-grid">
+    <div class="sponsor-logo">GOOGLE</div>
+    <div class="sponsor-logo">MICROSOFT</div>
+    <div class="sponsor-logo">AMAZON</div>
+    <div class="sponsor-logo">META</div>
+    <div class="sponsor-logo">APPLE</div>
+    <div class="sponsor-logo">NVIDIA</div>
+    <div class="sponsor-logo">OPENAI</div>
+    <div class="sponsor-logo">STRIPE</div>
+    <div class="sponsor-logo">VERCEL</div>
+    <div class="sponsor-logo">FIGMA</div>
+    <div class="sponsor-logo">NOTION</div>
+    <div class="sponsor-logo">LINEAR</div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="section" id="testimonials">
+  <div class="section-header">
+    <div class="section-tag">Testimonials</div>
+    <h2 class="section-title">What Attendees Say</h2>
+    <p class="section-desc">Hear from past participants about their Tech Urban experience.</p>
+  </div>
+  <div class="testimonials-grid">
+    <div class="testimonial-card">
+      <div class="testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+      <p class="testimonial-text">"Tech Urban completely changed my perspective on AI implementation. The workshops were incredibly practical, and I left with actionable strategies for my startup."</p>
+      <div class="testimonial-author">
+        <div class="testimonial-avatar">JD</div>
+        <div class="testimonial-info">
+          <h4>John Doe</h4>
+          <p>CEO, TechStart Inc.</p>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial-card">
+      <div class="testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+      <p class="testimonial-text">"The networking opportunities alone were worth the ticket price. I connected with three investors who later became our seed round backers. Absolutely invaluable."</p>
+      <div class="testimonial-author">
+        <div class="testimonial-avatar">JS</div>
+        <div class="testimonial-info">
+          <h4>Jane Smith</h4>
+          <p>CTO, CloudNative</p>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial-card">
+      <div class="testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+      <p class="testimonial-text">"Best tech conference I've attended in years. The quality of speakers, the organization, and the community energy were all top-notch. Already booked for next year!"</p>
+      <div class="testimonial-author">
+        <div class="testimonial-avatar">MK</div>
+        <div class="testimonial-info">
+          <h4>Michael Kim</h4>
+          <p>Lead Engineer, Google</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT / CTA -->
+<section class="section" id="contact">
+  <div class="stats-bar" style="flex-direction:column;text-align:center;padding:64px 48px;">
+    <h2 style="font-family:'Space Grotesk',sans-serif;font-size:2.5rem;font-weight:700;margin-bottom:16px;">Ready to Join?</h2>
+    <p style="color:rgba(255,255,255,0.7);margin-bottom:32px;max-width:500px;">Secure your spot at Tech Urban 2026. Early bird tickets are limited and selling fast.</p>
+    <button class="btn-primary" style="font-size:1.1rem;padding:16px 40px;" onclick="showPage('blog')">
+      <span>&#128640;</span> Get Your Ticket &mdash; $299
+    </button>
+  </div>
+</section>
+
+</div><!-- end landing-page -->
+
+<!-- ===== BLOG PAGE ===== -->
+<div class="blog-page" id="blog-page">
+  <div class="blog-header">
+    <div class="section-tag">Community Blog</div>
+    <h2 class="section-title">Latest from Our Community</h2>
+    <p class="section-desc">Stories, insights, and perspectives from tech innovators around the world. Powered by DummyJSON API.</p>
+  </div>
+  <div class="blog-filters" id="blog-filters">
+    <button class="blog-filter-btn active" data-tag="all" onclick="filterPosts('all')">All Posts</button>
+    <button class="blog-filter-btn" data-tag="history" onclick="filterPosts('history')">History</button>
+    <button class="blog-filter-btn" data-tag="fiction" onclick="filterPosts('fiction')">Fiction</button>
+    <button class="blog-filter-btn" data-tag="crime" onclick="filterPosts('crime')">Crime</button>
+    <button class="blog-filter-btn" data-tag="love" onclick="filterPosts('love')">Love</button>
+    <button class="blog-filter-btn" data-tag="mystery" onclick="filterPosts('mystery')">Mystery</button>
+    <button class="blog-filter-btn" data-tag="american" onclick="filterPosts('american')">American</button>
+  </div>
+  <div class="blog-loading" id="blog-loading">
+    <div class="blog-loading-spinner"></div>
+    <p>Loading posts from API...</p>
+  </div>
+  <div class="blog-grid" id="blog-grid" style="display:none;"></div>
+  <div class="blog-load-more" id="blog-load-more" style="display:none;">
+    <button class="btn-secondary" id="load-more-btn" onclick="loadMorePosts()">Load More Posts</button>
+  </div>
+</div>
+
+<!-- ===== BLOG MODAL ===== -->
+<div class="blog-modal-overlay" id="blog-modal" onclick="closeBlogModalOnOverlay(event)">
+  <div class="blog-modal" onclick="event.stopPropagation()">
+    <button class="blog-modal-close" onclick="closeBlogModal()">&#10005;</button>
+    <div class="blog-modal-tags" id="modal-tags"></div>
+    <h2 class="blog-modal-title" id="modal-title"></h2>
+    <div class="blog-modal-meta" id="modal-meta"></div>
+    <div class="blog-modal-body" id="modal-body"></div>
+    <div class="blog-modal-reactions" id="modal-reactions"></div>
+  </div>
+</div>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer" id="footer">
+  <div class="footer-grid">
+    <div>
+      <div class="footer-brand">&#9889; TechUrban</div>
+      <p class="footer-desc">The premier technology conference bringing together innovators, developers, and visionaries to shape the future of tech.</p>
+      <div class="footer-social">
+        <a href="#">X</a>
+        <a href="#">in</a>
+        <a href="#">IG</a>
+        <a href="#">YT</a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Conference</h4>
+      <a href="#" onclick="scrollToSection('about'); return false;">About</a>
+      <a href="#" onclick="scrollToSection('events'); return false;">Schedule</a>
+      <a href="#" onclick="scrollToSection('sponsors'); return false;">Sponsors</a>
+      <a href="#" onclick="showPage('blog'); return false;">Blog</a>
+    </div>
+    <div class="footer-col">
+      <h4>Resources</h4>
+      <a href="#">FAQ</a>
+      <a href="#">Code of Conduct</a>
+      <a href="#">Accessibility</a>
+      <a href="#">Press Kit</a>
+    </div>
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <a href="#">hello@techurban.com</a>
+      <a href="#">+1 (555) 123-4567</a>
+      <a href="#">Moscone Center, SF</a>
+      <a href="#">Privacy Policy</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>&copy; 2026 TechUrban Conference. All rights reserved.</span>
+    <span>Built with passion for the tech community.</span>
+  </div>
+</footer>
+
+<script>
+// ===== GLOBAL STATE =====
+let allPosts = [];
+let displayedPosts = 9;
+let currentFilter = 'all';
+let userCache = {};
+
+// ===== PAGE NAVIGATION =====
+function showPage(page) {
+  const landing = document.getElementById('landing-page');
+  const blog = document.getElementById('blog-page');
+  const navLinks = document.querySelectorAll('.nav-links a');
+
+  if (page === 'home') {
+    landing.classList.add('active');
+    blog.classList.remove('active');
+    navLinks.forEach(function(l) { l.classList.remove('active'); });
+    navLinks[0].classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } else if (page === 'blog') {
+    landing.classList.remove('active');
+    blog.classList.add('active');
+    navLinks.forEach(function(l) { l.classList.remove('active'); });
+    navLinks[4].classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (allPosts.length === 0) {
+      fetchBlogPosts();
+    }
+  }
+}
+
+function scrollToSection(id) {
+  const el = document.getElementById(id);
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+
+// ===== FETCH BLOG POSTS FROM API =====
+function fetchBlogPosts() {
+  document.getElementById('blog-loading').style.display = 'block';
+  document.getElementById('blog-grid').style.display = 'none';
+  document.getElementById('blog-load-more').style.display = 'none';
+
+  fetch('https://dummyjson.com/posts?limit=100')
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      allPosts = data.posts;
+      // Enhance posts with author names by fetching users
+      return fetch('https://dummyjson.com/users?limit=100');
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(usersData) {
+      var users = {};
+      usersData.users.forEach(function(u) {
+        users[u.id] = u.firstName + ' ' + u.lastName;
+      });
+      allPosts.forEach(function(p) {
+        p.authorName = users[p.userId] || 'User ' + p.userId;
+      });
+      document.getElementById('blog-loading').style.display = 'none';
+      document.getElementById('blog-grid').style.display = 'grid';
+      renderBlogPosts();
+    })
+    .catch(function(err) {
+      console.error('Error fetching posts:', err);
+      document.getElementById('blog-loading').innerHTML = '<p>Failed to load posts. Please try again later.</p>';
+    });
+}
+
+function getFilteredPosts() {
+  if (currentFilter === 'all') return allPosts;
+  return allPosts.filter(function(p) {
+    return p.tags.indexOf(currentFilter) !== -1;
+  });
+}
+
+function renderBlogPosts() {
+  var grid = document.getElementById('blog-grid');
+  var posts = getFilteredPosts().slice(0, displayedPosts);
+
+  grid.innerHTML = posts.map(function(post) {
+    var initials = post.authorName.split(' ').map(function(n) { return n[0]; }).join('');
+    var tagsHtml = post.tags.map(function(t) {
+      return '<span class="blog-tag">' + t + '</span>';
+    }).join('');
+    return '<div class="blog-card" onclick="openBlogModal(' + post.id + ')">' +
+      '<div class="blog-card-header">' + tagsHtml + '</div>' +
+      '<div class="blog-card-body">' +
+        '<h3 class="blog-card-title">' + escapeHtml(post.title) + '</h3>' +
+        '<p class="blog-card-excerpt">' + escapeHtml(post.body) + '</p>' +
+      '</div>' +
+      '<div class="blog-card-footer">' +
+        '<div class="blog-author">' +
+          '<div class="blog-author-avatar">' + initials + '</div>' +
+          '<span class="blog-author-name">' + escapeHtml(post.authorName) + '</span>' +
+        '</div>' +
+        '<div class="blog-stats">' +
+          '<span class="blog-stat">&#10084;&#65039; ' + post.reactions.likes + '</span>' +
+          '<span class="blog-stat">&#128065; ' + post.views + '</span>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+
+  var loadMoreBtn = document.getElementById('load-more-btn');
+  var loadMoreWrap = document.getElementById('blog-load-more');
+  if (displayedPosts >= getFilteredPosts().length) {
+    loadMoreWrap.style.display = 'none';
+  } else {
+    loadMoreWrap.style.display = 'block';
+  }
+}
+
+function escapeHtml(text) {
+  var div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+function filterPosts(tag) {
+  document.querySelectorAll('.blog-filter-btn').forEach(function(b) {
+    b.classList.remove('active');
+  });
+  document.querySelector('.blog-filter-btn[data-tag="' + tag + '"]').classList.add('active');
+  currentFilter = tag;
+  displayedPosts = 9;
+  renderBlogPosts();
+}
+
+function loadMorePosts() {
+  displayedPosts += 6;
+  renderBlogPosts();
+}
+
+// ===== BLOG MODAL =====
+function openBlogModal(postId) {
+  var post = allPosts.find(function(p) { return p.id === postId; });
+  if (!post) return;
+
+  var tagsHtml = post.tags.map(function(t) {
+    return '<span class="blog-tag">' + t + '</span>';
+  }).join('');
+
+  document.getElementById('modal-tags').innerHTML = tagsHtml;
+  document.getElementById('modal-title').textContent = post.title;
+  document.getElementById('modal-meta').innerHTML = 
+    '<span>&#9997; ' + escapeHtml(post.authorName) + '</span>' +
+    '<span>&#128065; ' + post.views.toLocaleString() + ' views</span>' +
+    '<span>&#128197; Post #' + post.id + '</span>';
+  document.getElementById('modal-body').textContent = post.body;
+  document.getElementById('modal-reactions').innerHTML = 
+    '<span class="blog-reaction likes">&#10084;&#65039; ' + post.reactions.likes + ' likes</span>' +
+    '<span class="blog-reaction dislikes">&#128078; ' + post.reactions.dislikes + ' dislikes</span>';
+  document.getElementById('blog-modal').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeBlogModal() {
+  document.getElementById('blog-modal').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+function closeBlogModalOnOverlay(e) {
+  if (e.target === document.getElementById('blog-modal')) {
+    closeBlogModal();
+  }
+}
+
+// ===== NAVBAR SCROLL EFFECT =====
+window.addEventListener('scroll', function() {
+  var navbar = document.getElementById('navbar');
+  if (window.scrollY > 50) {
+    navbar.style.background = 'rgba(10,10,15,0.95)';
+    navbar.style.boxShadow = '0 4px 30px rgba(0,0,0,0.3)';
+  } else {
+    navbar.style.background = 'rgba(10,10,15,0.85)';
+    navbar.style.boxShadow = 'none';
+  }
+});
+
+// ===== KEYBOARD SHORTCUTS =====
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    closeBlogModal();
+  }
+});
+</script>
+
+</body>
+</html>

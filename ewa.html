@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JosFarmConnect - Interactive Dashboard</title>
+<style>
+  :root {
+    --kimi-font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --kimi-font-mono: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, monospace;
+    --kimi-color-text-primary: #1a1a1a;
+    --kimi-color-text-secondary: #555;
+    --kimi-color-text-tertiary: #888;
+    --kimi-color-text-quaternary: #bbb;
+    --kimi-color-surface: #fff;
+    --kimi-color-surface-muted: #f5f5f5;
+    --kimi-color-surface-raised: #fff;
+    --kimi-color-surface-strong: #eaeaea;
+    --kimi-color-border: #e0e0e0;
+    --kimi-color-danger: #e53935;
+    --kimi-color-positive: #43a047;
+    --kimi-color-warning: #fb8c00;
+    --kimi-color-accent: #1976d2;
+    --kimi-chart-1: #1976d2;
+    --kimi-chart-2: #e53935;
+    --kimi-chart-3: #43a047;
+    --kimi-chart-4: #7e57c2;
+    --kimi-chart-5: #78909c;
+    --t-micro: 60ms;
+    --t-fast: 150ms;
+    --t-normal: 250ms;
+    --t-slow: 350ms;
+    --ease-out: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    --ease-in: cubic-bezier(0.55, 0.085, 0.68, 0.53);
+    --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --kimi-color-text-primary: #f5f5f5;
+      --kimi-color-text-secondary: #aaa;
+      --kimi-color-text-tertiary: #777;
+      --kimi-color-text-quaternary: #555;
+      --kimi-color-surface: #1e1e1e;
+      --kimi-color-surface-muted: #2a2a2a;
+      --kimi-color-surface-raised: #252525;
+      --kimi-color-surface-strong: #333;
+      --kimi-color-border: #333;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 24px; font-family: var(--kimi-font-sans); background: var(--kimi-color-surface-muted); color: var(--kimi-color-text-primary); }
+
+  .jfc-root { font-family: var(--kimi-font-sans); width: 100%; max-width: 900px; margin: 0 auto; color: var(--kimi-color-text-primary); }
+  .jfc-tabs { display: flex; gap: 4px; margin-bottom: 20px; padding: 4px; border-radius: 10px; background: var(--kimi-color-surface-muted); width: fit-content; }
+  .jfc-tab { padding: 8px 20px; border-radius: 8px; border: none; background: transparent; color: var(--kimi-color-text-secondary); cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.2s var(--ease-out); }
+  .jfc-tab:hover { color: var(--kimi-color-text-primary); }
+  .jfc-tab.active { background: var(--kimi-color-surface-raised); color: var(--kimi-color-text-primary); box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+  .jfc-panel { display: none; animation: fadeIn 0.35s var(--ease-out); }
+  .jfc-panel.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes priceFlash { 0% { background: rgba(76,175,80,0.3); } 100% { background: transparent; } }
+
+  .phone-stage { display: flex; justify-content: center; padding: 20px 0; }
+  .phone-device { width: 280px; background: #1a1a1a; border-radius: 36px; padding: 14px 12px 18px; box-shadow: 0 20px 60px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,0.08) inset; position: relative; }
+  .phone-notch { width: 80px; height: 20px; background: #1a1a1a; border-radius: 0 0 12px 12px; position: absolute; top: 14px; left: 50%; transform: translateX(-50%); z-index: 2; }
+  .phone-screen { background: #e8f5e9; border-radius: 24px; overflow: hidden; position: relative; min-height: 380px; display: flex; flex-direction: column; }
+  .phone-status { display: flex; justify-content: space-between; align-items: center; padding: 8px 16px 4px; font-size: 10px; font-weight: 600; color: #333; }
+  .phone-status-right { display: flex; gap: 4px; align-items: center; }
+  .phone-signal { display: flex; gap: 1px; align-items: flex-end; height: 8px; }
+  .phone-signal-bar { width: 2px; background: #333; border-radius: 1px; }
+  .phone-signal-bar:nth-child(1) { height: 3px; }
+  .phone-signal-bar:nth-child(2) { height: 5px; }
+  .phone-signal-bar:nth-child(3) { height: 7px; }
+  .phone-signal-bar:nth-child(4) { height: 8px; }
+  .phone-battery { width: 14px; height: 7px; border: 1px solid #333; border-radius: 2px; position: relative; }
+  .phone-battery::after { content:''; position: absolute; right: -2px; top: 2px; width: 1px; height: 3px; background: #333; border-radius: 0 1px 1px 0; }
+  .phone-battery-fill { width: 60%; height: 100%; background: #333; border-radius: 1px; }
+  .phone-content { flex: 1; padding: 8px 12px 12px; font-family: 'Courier New', monospace; font-size: 12px; line-height: 1.55; color: #1a1a1a; overflow-y: auto; }
+  .phone-app-header { text-align: center; font-weight: 700; font-size: 11px; letter-spacing: 0.5px; color: #2e7d32; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px dashed rgba(0,0,0,0.15); }
+  .phone-menu-title { font-weight: 700; margin-bottom: 10px; font-size: 12.5px; }
+  .phone-option { padding: 5px 4px; cursor: pointer; border-radius: 4px; transition: background 0.15s; }
+  .phone-option:hover { background: rgba(46,125,50,0.08); }
+  .phone-input-line { margin-top: 12px; display: flex; align-items: center; gap: 6px; padding: 6px; background: rgba(255,255,255,0.6); border-radius: 6px; }
+  .phone-input { background: transparent; border: none; font-family: 'Courier New', monospace; font-size: 13px; width: 100%; outline: none; color: #1a1a1a; font-weight: 700; }
+  .phone-keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 12px 16px 8px; }
+  .phone-key { aspect-ratio: 1; border-radius: 50%; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 20px; font-weight: 500; color: rgba(255,255,255,0.9); cursor: pointer; user-select: none; transition: all 0.1s; }
+  .phone-key:hover { background: rgba(255,255,255,0.25); }
+  .phone-key:active { transform: scale(0.92); background: rgba(255,255,255,0.35); }
+  .phone-key span { font-size: 8px; color: rgba(255,255,255,0.5); margin-top: -2px; font-weight: 400; }
+  .phone-actions { display: flex; justify-content: space-between; padding: 8px 16px 12px; }
+  .phone-btn { padding: 8px 20px; border-radius: 20px; border: none; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.15s; letter-spacing: 0.3px; }
+  .phone-btn.send { background: #4caf50; color: white; box-shadow: 0 2px 8px rgba(76,175,80,0.3); }
+  .phone-btn.send:hover { background: #43a047; }
+  .phone-btn.end { background: #e53935; color: white; box-shadow: 0 2px 8px rgba(229,57,53,0.3); }
+  .phone-btn.end:hover { background: #d32f2f; }
+  .phone-confirm-box { background: rgba(46,125,50,0.1); border: 1px solid rgba(46,125,50,0.2); border-radius: 8px; padding: 10px; margin: 8px 0; text-align: center; }
+  .phone-confirm-box strong { color: #2e7d32; }
+
+  /* ===== ENHANCED DASHBOARD STYLES ===== */
+  .dash-topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+  .dash-brand { display: flex; align-items: center; gap: 10px; }
+  .dash-brand-icon { width: 36px; height: 36px; border-radius: 10px; background: color-mix(in srgb, var(--kimi-chart-3) 15%, transparent); display: flex; align-items: center; justify-content: center; color: var(--kimi-chart-3); }
+  .dash-brand-text { font-size: 17px; font-weight: 500; color: var(--kimi-color-text-primary); }
+  .dash-brand-sub { font-size: 12px; color: var(--kimi-color-text-tertiary); }
+  .dash-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .dash-btn { padding: 7px 12px; border-radius: 8px; border: 1px solid var(--kimi-color-border); background: var(--kimi-color-surface); color: var(--kimi-color-text-secondary); cursor: pointer; display: flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 500; transition: all 0.15s; }
+  .dash-btn:hover { background: var(--kimi-color-surface-muted); color: var(--kimi-color-text-primary); }
+  .dash-btn.primary { background: var(--kimi-color-positive); color: white; border-color: var(--kimi-color-positive); }
+  .dash-btn.primary:hover { background: #2e7d32; }
+
+  .dash-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px; }
+  .dash-card { padding: 16px; border-radius: 12px; border: 1px solid var(--kimi-color-border); background: var(--kimi-color-surface); transition: all 0.2s; cursor: pointer; position: relative; overflow: hidden; }
+  .dash-card:hover { border-color: var(--kimi-color-text-quaternary); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.04); }
+  .dash-card.flash { animation: priceFlash 0.6s ease; }
+  .dash-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .dash-card-label { font-size: 12px; color: var(--kimi-color-text-tertiary); }
+  .dash-card-icon { width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .dash-card-value { font-size: 24px; font-weight: 500; color: var(--kimi-color-text-primary); font-variant-numeric: tabular-nums; line-height: 1.1; }
+  .dash-card-delta { font-size: 12px; margin-top: 8px; display: flex; align-items: center; gap: 3px; font-weight: 500; }
+  .dash-card .click-hint { font-size: 10px; color: var(--kimi-color-text-tertiary); margin-top: 6px; opacity: 0.6; }
+
+  .dash-section { border: 1px solid var(--kimi-color-border); border-radius: 12px; padding: 16px; margin-bottom: 14px; background: var(--kimi-color-surface); }
+  .dash-section-title { font-size: 14px; font-weight: 500; color: var(--kimi-color-text-primary); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+  .chart-container { height: 100px; position: relative; }
+  .chart-svg { width: 100%; height: 100%; }
+
+  .search-bar { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+  .search-input { flex: 1; padding: 8px 12px; border: 1px solid var(--kimi-color-border); border-radius: 8px; background: var(--kimi-color-surface); color: var(--kimi-color-text-primary); font-size: 13px; min-width: 150px; }
+  .search-input:focus { outline: none; border-color: var(--kimi-color-accent); }
+  .filter-select { padding: 8px 12px; border: 1px solid var(--kimi-color-border); border-radius: 8px; background: var(--kimi-color-surface); color: var(--kimi-color-text-primary); font-size: 13px; cursor: pointer; }
+
+  .listing-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--kimi-color-border); transition: background 0.15s; margin: 0 -8px; padding-left: 8px; padding-right: 8px; border-radius: 6px; flex-wrap: wrap; gap: 8px; }
+  .listing-row:hover { background: var(--kimi-color-surface-muted); }
+  .listing-row:last-child { border-bottom: none; }
+  .listing-info { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 150px; }
+  .listing-avatar { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; flex-shrink: 0; }
+  .listing-name { font-size: 13px; font-weight: 500; color: var(--kimi-color-text-primary); }
+  .listing-meta { font-size: 11px; color: var(--kimi-color-text-tertiary); margin-top: 1px; }
+  .listing-price { font-size: 14px; font-weight: 500; color: var(--kimi-color-text-primary); font-variant-numeric: tabular-nums; }
+  .listing-actions { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  .listing-actions .action-btn { padding: 4px 10px; border-radius: 6px; border: 1px solid var(--kimi-color-border); background: transparent; color: var(--kimi-color-text-secondary); font-size: 11px; font-weight: 500; cursor: pointer; transition: all 0.15s; }
+  .listing-actions .action-btn:hover { background: var(--kimi-color-surface-muted); color: var(--kimi-color-text-primary); }
+  .listing-actions .action-btn.contact { border-color: var(--kimi-color-accent); color: var(--kimi-color-accent); }
+  .listing-actions .action-btn.contact:hover { background: var(--kimi-color-accent); color: white; }
+  .listing-actions .action-btn.buy { border-color: var(--kimi-color-positive); color: var(--kimi-color-positive); }
+  .listing-actions .action-btn.buy:hover { background: var(--kimi-color-positive); color: white; }
+
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 600; letter-spacing: 0.2px; }
+  .tag-green { background: color-mix(in srgb, var(--kimi-color-positive) 10%, transparent); color: var(--kimi-color-positive); }
+  .tag-amber { background: color-mix(in srgb, var(--kimi-color-warning) 10%, transparent); color: var(--kimi-color-warning); }
+
+  .advisory-card { padding: 12px; border-radius: 10px; background: color-mix(in srgb, var(--kimi-chart-1) 6%, transparent); border: 1px solid color-mix(in srgb, var(--kimi-chart-1) 15%, transparent); font-size: 12px; line-height: 1.6; color: var(--kimi-color-text-secondary); cursor: pointer; transition: all 0.2s; }
+  .advisory-card:hover { transform: scale(1.01); }
+  .advisory-card strong { color: var(--kimi-color-text-primary); font-weight: 500; }
+
+  .transport-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--kimi-color-border); }
+  .transport-row:last-child { border-bottom: none; }
+  .transport-icon { width: 32px; height: 32px; border-radius: 8px; background: var(--kimi-color-surface-muted); display: flex; align-items: center; justify-content: center; color: var(--kimi-color-text-secondary); flex-shrink: 0; }
+  .transport-info { flex: 1; }
+  .transport-route { font-size: 13px; font-weight: 500; color: var(--kimi-color-text-primary); }
+  .transport-price { font-size: 11px; color: var(--kimi-color-text-tertiary); margin-top: 1px; }
+  .book-btn { padding: 5px 12px; border-radius: 6px; border: 1px solid var(--kimi-color-text-primary); background: transparent; color: var(--kimi-color-text-primary); font-size: 11px; font-weight: 500; cursor: pointer; transition: all 0.15s; }
+  .book-btn:hover { background: var(--kimi-color-text-primary); color: var(--kimi-color-surface); }
+  .book-btn.booked { background: var(--kimi-color-positive); color: white; border-color: var(--kimi-color-positive); }
+
+  .live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--kimi-color-positive); animation: pulse 2s infinite; display: inline-block; margin-right: 6px; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+  .toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 1000; display: flex; flex-direction: column; gap: 8px; }
+  .toast { padding: 12px 20px; border-radius: 10px; background: var(--kimi-color-surface-raised); border: 1px solid var(--kimi-color-border); box-shadow: 0 8px 24px rgba(0,0,0,0.12); animation: slideUp 0.3s var(--ease-out); display: flex; align-items: center; gap: 10px; min-width: 250px; max-width: 400px; }
+  .toast.success { border-left: 4px solid var(--kimi-color-positive); }
+  .toast.info { border-left: 4px solid var(--kimi-color-accent); }
+  .toast.warning { border-left: 4px solid var(--kimi-color-warning); }
+  .toast .toast-icon { font-size: 18px; }
+  .toast .toast-msg { font-size: 13px; color: var(--kimi-color-text-primary); }
+  .toast .toast-close { cursor: pointer; color: var(--kimi-color-text-tertiary); font-size: 16px; margin-left: auto; }
+
+  @media (max-width: 600px) { .two-col { grid-template-columns: 1fr; } .dash-grid-3 { grid-template-columns: 1fr; } .dash-topbar { flex-direction: column; align-items: stretch; } .search-bar { flex-direction: column; } }
+</style>
+</head>
+<body>
+
+<div class="jfc-root">
+  <div class="jfc-tabs">
+    <button class="jfc-tab active" onclick="switchTab('ussd', this)">Farmer (USSD)</button>
+    <button class="jfc-tab" onclick="switchTab('dash', this)">Buyer Dashboard</button>
+  </div>
+
+  <!-- ===== USSD PANEL ===== -->
+  <div id="ussd-panel" class="jfc-panel active">
+    <div style="text-align:center; margin-bottom:8px;">
+      <span style="font-size:12px; color:var(--kimi-color-text-tertiary);">Dial </span>
+      <code style="background:var(--kimi-color-surface-muted); padding:2px 8px; border-radius:4px; font-size:12px; font-family:var(--kimi-font-mono);">*384*67#</code>
+      <span style="font-size:12px; color:var(--kimi-color-text-tertiary);"> on any basic phone</span>
+    </div>
+    <div class="phone-stage">
+      <div class="phone-device">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <div class="phone-status">
+            <span>12:45</span>
+            <div class="phone-status-right">
+              <div class="phone-signal"><div class="phone-signal-bar"></div><div class="phone-signal-bar"></div><div class="phone-signal-bar"></div><div class="phone-signal-bar"></div></div>
+              <div class="phone-battery"><div class="phone-battery-fill"></div></div>
+            </div>
+          </div>
+          <div class="phone-content" id="phone-content"></div>
+        </div>
+        <div class="phone-keypad">
+          <div class="phone-key" onclick="press('1')"><span>&nbsp;</span>1</div>
+          <div class="phone-key" onclick="press('2')"><span>ABC</span>2</div>
+          <div class="phone-key" onclick="press('3')"><span>DEF</span>3</div>
+          <div class="phone-key" onclick="press('4')"><span>GHI</span>4</div>
+          <div class="phone-key" onclick="press('5')"><span>JKL</span>5</div>
+          <div class="phone-key" onclick="press('6')"><span>MNO</span>6</div>
+          <div class="phone-key" onclick="press('7')"><span>PQRS</span>7</div>
+          <div class="phone-key" onclick="press('8')"><span>TUV</span>8</div>
+          <div class="phone-key" onclick="press('9')"><span>WXYZ</span>9</div>
+          <div class="phone-key" onclick="press('*')">*</div>
+          <div class="phone-key" onclick="press('0')"><span>+</span>0</div>
+          <div class="phone-key" onclick="press('#')">#</div>
+        </div>
+        <div class="phone-actions">
+          <button class="phone-btn end" onclick="resetUSSD()">End</button>
+          <button class="phone-btn send" onclick="sendUSSD()">Send</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== ENHANCED INTERACTIVE DASHBOARD ===== -->
+  <div id="dash-panel" class="jfc-panel">
+    <div class="dash-topbar">
+      <div class="dash-brand">
+        <div class="dash-brand-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M18.9003 10.7998C18.9002 7.08572 16.2547 3.90039 11.9999 3.90039C7.74237 3.90047 5.10056 7.05052 5.10046 10.7998C5.10046 13.0829 6.29178 15.183 7.80359 16.916C9.30556 18.6377 11.0351 19.8955 11.91 20.4775C11.9433 20.4997 11.9743 20.5068 11.9999 20.5068C12.0255 20.5068 12.0564 20.4997 12.0897 20.4775C12.9646 19.8955 14.695 18.638 16.1971 16.916C17.7089 15.183 18.9003 13.0828 18.9003 10.7998Z" fill="currentColor"/></svg>
+        </div>
+        <div>
+          <div class="dash-brand-text">JosFarmConnect</div>
+          <div class="dash-brand-sub">Farin Gada Market, Jos <span class="live-dot"></span> Live</div>
+        </div>
+      </div>
+      <div class="dash-actions">
+        <button class="dash-btn primary" onclick="refreshPrices()">🔄 Refresh Prices</button>
+        <button class="dash-btn" onclick="showToast('📊 Dashboard updated!', 'info')">📊 Stats</button>
+      </div>
+    </div>
+
+    <!-- Search & Filter Bar -->
+    <div class="search-bar">
+      <input type="text" id="search-input" class="search-input" placeholder="🔍 Search farmers, crops, locations..." oninput="searchFarmers()">
+      <select id="filter-select" class="filter-select" onchange="filterFarmers()">
+        <option value="all">📋 All listings</option>
+        <option value="verified">✅ Verified only</option>
+        <option value="pending">⏳ Pending only</option>
+      </select>
+    </div>
+
+    <!-- Price Cards -->
+    <div class="dash-grid-3">
+      <div class="dash-card" data-crop="tomatoes" onclick="showPriceHistory('tomatoes')">
+        <div class="dash-card-header">
+          <span class="dash-card-label">🍅 Tomatoes / basket</span>
+          <button class="dash-btn" onclick="event.stopPropagation(); setPriceAlert('tomatoes')" style="font-size:10px; padding:2px 8px;">🔔 Alert</button>
+        </div>
+        <div class="dash-card-value" id="price-tomatoes">₦28,500</div>
+        <div class="dash-card-delta" id="delta-tomatoes" style="color:var(--kimi-color-positive)">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M11.386 2.36129C11.7378 2.01198 12.3059 2.013 12.6565 2.36372L21.6365 11.3637C21.9872 11.7144 21.9872 12.2856 21.6365 12.6363C21.2858 12.987 20.7146 12.987 20.3639 12.6363L12.9 5.17235V21C12.9 21.4971 12.4971 21.9 12 21.9C11.5029 21.9 11.1 21.4971 11.1 21V5.17235L3.63645 12.6363C3.28574 12.987 2.71458 12.987 2.36387 12.6363C2.01316 12.2856 2.01316 11.7144 2.36387 11.3637L11.3439 2.36372L11.386 2.36129Z" fill="currentColor"/></svg>
+          +12% this week
+        </div>
+        <div class="click-hint">👆 Click for price history</div>
+      </div>
+
+      <div class="dash-card" data-crop="onions" onclick="showPriceHistory('onions')">
+        <div class="dash-card-header">
+          <span class="dash-card-label">🧅 Onions / bag</span>
+          <button class="dash-btn" onclick="event.stopPropagation(); setPriceAlert('onions')" style="font-size:10px; padding:2px 8px;">🔔 Alert</button>
+        </div>
+        <div class="dash-card-value" id="price-onions">₦195,000</div>
+        <div class="dash-card-delta" id="delta-onions" style="color:var(--kimi-color-danger)">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M11.386 21.6387C11.7378 21.988 12.3059 21.987 12.6565 21.6363L21.6365 12.6363C21.9872 12.2856 21.9872 11.7144 21.6365 11.3637C21.2858 11.013 20.7146 11.013 20.3639 11.3637L12.9 18.8277V3C12.9 2.50294 12.4971 2.1 12 2.1C11.5029 2.1 11.1 2.50294 11.1 3V18.8277L3.63645 11.3637C3.28574 11.013 2.71458 11.013 2.36387 11.3637C2.01316 11.7144 2.01316 12.2856 2.36387 12.6363L11.3439 21.6363L11.386 21.6387Z" fill="currentColor"/></svg>
+          -8% this week
+        </div>
+        <div class="click-hint">👆 Click for price history</div>
+      </div>
+
+      <div class="dash-card" data-crop="peppers" onclick="showPriceHistory('peppers')">
+        <div class="dash-card-header">
+          <span class="dash-card-label">🌶️ Peppers / bag</span>
+          <button class="dash-btn" onclick="event.stopPropagation(); setPriceAlert('peppers')" style="font-size:10px; padding:2px 8px;">🔔 Alert</button>
+        </div>
+        <div class="dash-card-value" id="price-peppers">₦42,000</div>
+        <div class="dash-card-delta" id="delta-peppers" style="color:var(--kimi-color-positive)">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M11.386 2.36129C11.7378 2.01198 12.3059 2.013 12.6565 2.36372L21.6365 11.3637C21.9872 11.7144 21.9872 12.2856 21.6365 12.6363C21.2858 12.987 20.7146 12.987 20.3639 12.6363L12.9 5.17235V21C12.9 21.4971 12.4971 21.9 12 21.9C11.5029 21.9 11.1 21.4971 11.1 21V5.17235L3.63645 12.6363C3.28574 12.987 2.71458 12.987 2.36387 12.6363C2.01316 12.2856 2.01316 11.7144 2.36387 11.3637L11.3439 2.36372L11.386 2.36129Z" fill="currentColor"/></svg>
+          +5% this week
+        </div>
+        <div class="click-hint">👆 Click for price history</div>
+      </div>
+    </div>
+
+    <!-- Price Trend Chart -->
+    <div class="dash-section">
+      <div class="dash-section-title">
+        <span class="live-dot"></span>
+        7-day price trend
+      </div>
+      <div class="chart-container">
+        <svg class="chart-svg" viewBox="0 0 600 100" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="grad1" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="var(--kimi-chart-1)" stop-opacity="0.25"/>
+              <stop offset="100%" stop-color="var(--kimi-chart-1)" stop-opacity="0"/>
+            </linearGradient>
+            <linearGradient id="grad2" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="var(--kimi-chart-2)" stop-opacity="0.25"/>
+              <stop offset="100%" stop-color="var(--kimi-chart-2)" stop-opacity="0"/>
+            </linearGradient>
+            <linearGradient id="grad3" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="var(--kimi-chart-3)" stop-opacity="0.25"/>
+              <stop offset="100%" stop-color="var(--kimi-chart-3)" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <line x1="0" y1="80" x2="600" y2="80" stroke="var(--kimi-color-border)" stroke-width="0.5"/>
+          <line x1="0" y1="50" x2="600" y2="50" stroke="var(--kimi-color-border)" stroke-width="0.5" stroke-dasharray="3,3"/>
+          <line x1="0" y1="20" x2="600" y2="20" stroke="var(--kimi-color-border)" stroke-width="0.5" stroke-dasharray="3,3"/>
+          <path d="M0,75 L85,68 L171,62 L257,55 L343,48 L429,42 L600,30" fill="none" stroke="var(--kimi-chart-1)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M0,75 L85,68 L171,62 L257,55 L343,48 L429,42 L600,30 L600,100 L0,100 Z" fill="url(#grad1)"/>
+          <path d="M0,25 L85,30 L171,35 L257,40 L343,45 L429,50 L600,55" fill="none" stroke="var(--kimi-chart-2)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="4,3"/>
+          <path d="M0,25 L85,30 L171,35 L257,40 L343,45 L429,50 L600,55 L600,100 L0,100 Z" fill="url(#grad2)"/>
+          <path d="M0,70 L85,65 L171,60 L257,58 L343,52 L429,48 L600,40" fill="none" stroke="var(--kimi-chart-3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M0,70 L85,65 L171,60 L257,58 L343,52 L429,48 L600,40 L600,100 L0,100 Z" fill="url(#grad3)"/>
+          <circle cx="600" cy="30" r="3" fill="var(--kimi-chart-1)"/>
+          <circle cx="600" cy="55" r="3" fill="var(--kimi-chart-2)"/>
+          <circle cx="600" cy="40" r="3" fill="var(--kimi-chart-3)"/>
+        </svg>
+      </div>
+      <div style="display:flex; gap:16px; margin-top:8px; justify-content:center;">
+        <div style="display:flex; align-items:center; gap:4px; font-size:11px; color:var(--kimi-color-text-secondary);"><div style="width:8px;height:8px;border-radius:50%;background:var(--kimi-chart-1)"></div>Tomatoes</div>
+        <div style="display:flex; align-items:center; gap:4px; font-size:11px; color:var(--kimi-color-text-secondary);"><div style="width:8px;height:8px;border-radius:50%;background:var(--kimi-chart-2)"></div>Onions</div>
+        <div style="display:flex; align-items:center; gap:4px; font-size:11px; color:var(--kimi-color-text-secondary);"><div style="width:8px;height:8px;border-radius:50%;background:var(--kimi-chart-3)"></div>Peppers</div>
+      </div>
+    </div>
+
+    <!-- Two Column: Transport + Advisory -->
+    <div class="two-col">
+      <div class="dash-section" style="margin-bottom:0;">
+        <div class="dash-section-title">🚛 Transport hub</div>
+        <div class="transport-row">
+          <div class="transport-icon">📍</div>
+          <div class="transport-info">
+            <div class="transport-route">Barkin Ladi → Farin Gada</div>
+            <div class="transport-price">₦4,500 / trip · 2 trucks available</div>
+          </div>
+          <button class="book-btn" onclick="bookTransport(this)">Book</button>
+        </div>
+        <div class="transport-row">
+          <div class="transport-icon">📍</div>
+          <div class="transport-info">
+            <div class="transport-route">Mangu → Farin Gada</div>
+            <div class="transport-price">₦6,200 / trip · 1 truck available</div>
+          </div>
+          <button class="book-btn" onclick="bookTransport(this)">Book</button>
+        </div>
+        <div class="transport-row">
+          <div class="transport-icon">📍</div>
+          <div class="transport-info">
+            <div class="transport-route">Riyom → Farin Gada</div>
+            <div class="transport-price">₦3,800 / trip · 3 trucks available</div>
+          </div>
+          <button class="book-btn" onclick="bookTransport(this)">Book</button>
+        </div>
+      </div>
+
+      <div class="dash-section" style="margin-bottom:0;">
+        <div class="dash-section-title">🧠 AI storage advisory</div>
+        <div class="advisory-card" onclick="showToast('📋 Tomatoes: Store in cool, dry place. Shelf life: 5-7 days.', 'info')">
+          <strong>🍅 Tomatoes:</strong> Store in a cool, dry place with good ventilation. Do not stack baskets more than 3 high. Shelf life: 5–7 days.
+        </div>
+        <div class="advisory-card" style="margin-top:10px;" onclick="showToast('📋 Onions: Hang in net bags. Shelf life: 3-4 weeks.', 'info')">
+          <strong>🧅 Onions:</strong> Hang in net bags under shade. Avoid moisture. Shelf life: 3–4 weeks.
+        </div>
+        <div class="advisory-card" style="margin-top:10px;" onclick="showToast('📋 Peppers: Store in woven baskets. Shelf life: 2-3 weeks.', 'info')">
+          <strong>🌶️ Peppers:</strong> Store in woven baskets in dry, shaded area. Check daily. Shelf life: 2–3 weeks.
+        </div>
+      </div>
+    </div>
+
+    <!-- Farmer Listings -->
+    <div class="dash-section" style="margin-top:14px;">
+      <div class="dash-section-title">
+        👨‍🌾 Fresh farmer listings
+        <span style="font-size:11px; color:var(--kimi-color-text-tertiary); font-weight:400; margin-left:auto;" id="listing-count">4 farmers</span>
+      </div>
+
+      <div class="listing-row">
+        <div class="listing-info">
+          <div class="listing-avatar" style="background:color-mix(in srgb, var(--kimi-chart-3) 15%, transparent); color:var(--kimi-chart-3);">JD</div>
+          <div>
+            <div class="listing-name">John Dung</div>
+            <div class="listing-meta">Barkin Ladi · 12 baskets tomatoes · Posted 2h ago</div>
+          </div>
+        </div>
+        <div class="listing-actions">
+          <button class="action-btn contact" onclick="contactFarmer(this)">📞 Contact</button>
+          <button class="action-btn buy" onclick="buyFromFarmer(this)">🛒 Buy</button>
+          <span class="tag tag-green">Verified</span>
+        </div>
+      </div>
+
+      <div class="listing-row">
+        <div class="listing-info">
+          <div class="listing-avatar" style="background:color-mix(in srgb, var(--kimi-chart-2) 15%, transparent); color:var(--kimi-chart-2);">MP</div>
+          <div>
+            <div class="listing-name">Mary Pam</div>
+            <div class="listing-meta">Mangu · 5 bags onions · Posted 5h ago</div>
+          </div>
+        </div>
+        <div class="listing-actions">
+          <button class="action-btn contact" onclick="contactFarmer(this)">📞 Contact</button>
+          <button class="action-btn buy" onclick="buyFromFarmer(this)">🛒 Buy</button>
+          <span class="tag tag-amber">Pending</span>
+        </div>
+      </div>
+
+      <div class="listing-row">
+        <div class="listing-info">
+          <div class="listing-avatar" style="background:color-mix(in srgb, var(--kimi-chart-4) 15%, transparent); color:var(--kimi-chart-4);">IL</div>
+          <div>
+            <div class="listing-name">Ibrahim L.</div>
+            <div class="listing-meta">Riyom · 20 bags peppers · Posted 1d ago</div>
+          </div>
+        </div>
+        <div class="listing-actions">
+          <button class="action-btn contact" onclick="contactFarmer(this)">📞 Contact</button>
+          <button class="action-btn buy" onclick="buyFromFarmer(this)">🛒 Buy</button>
+          <span class="tag tag-green">Verified</span>
+        </div>
+      </div>
+
+      <div class="listing-row">
+        <div class="listing-info">
+          <div class="listing-avatar" style="background:color-mix(in srgb, var(--kimi-chart-1) 15%, transparent); color:var(--kimi-chart-1);">SA</div>
+          <div>
+            <div class="listing-name">Sarah Azi</div>
+            <div class="listing-meta">Barkin Ladi · 8 baskets tomatoes · Posted 1d ago</div>
+          </div>
+        </div>
+        <div class="listing-actions">
+          <button class="action-btn contact" onclick="contactFarmer(this)">📞 Contact</button>
+          <button class="action-btn buy" onclick="buyFromFarmer(this)">🛒 Buy</button>
+          <span class="tag tag-green">Verified</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- JAVASCRIPT - Complete Interactive Dashboard                   -->
+<!-- ============================================================ -->
+<script>
+  // ============================================================
+  // TAB SWITCHING
+  // ============================================================
+  function switchTab(id, btn) {
+    document.querySelectorAll('.jfc-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.jfc-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(id + '-panel').classList.add('active');
+  }
+
+  // ============================================================
+  // USSD STATE & MENUS (unchanged from original)
+  // ============================================================
+  let ussdState = 'home';
+  let ussdInput = '';
+  let alertCrop = '';
+  let alertPrice = '';
+
+  const menus = {
+    home: {
+      title: 'Welcome to JosFarmConnect',
+      options: ['1. Check market prices', '2. Set price alert', '3. Storage advice', '4. Find transport', '5. Sell my produce', '6. Cooperative']
+    },
+    prices: {
+      title: 'Farin Gada Prices (18 Jul)',
+      options: ['1. Tomatoes: ₦28,500/basket', '2. Onions: ₦195,000/bag', '3. Peppers: ₦42,000/bag', '4. Carrots: ₦15,000/bag', '0. Back']
+    },
+    alert_crop: {
+      title: 'Price Alert: Select Crop',
+      options: ['1. Tomatoes', '2. Onions', '3. Peppers', '0. Back']
+    },
+    alert_price: {
+      title: 'Enter target price (₦):',
+      options: [],
+      input: true
+    },
+    alert_confirm: {
+      title: '',
+      options: ['1. Confirm', '0. Back'],
+      custom: true
+    },
+    storage: {
+      title: 'Storage Advice',
+      options: ['1. Tomatoes: ventilated shade, 5-7 days', '2. Onions: hang in net bags, 3-4 wks', '3. Peppers: dry storage, 2-3 wks', '0. Back']
+    },
+    transport: {
+      title: 'Transport Routes',
+      options: ['1. Barkin Ladi→Farin Gada ₦4,500', '2. Mangu→Farin Gada ₦6,200', '3. Riyom→Farin Gada ₦3,800', '0. Back']
+    },
+    sell: {
+      title: 'List Produce',
+      options: ['Call: 0700-FARM-001', 'Or visit: josfarmconnect.ng', '0. Back']
+    },
+    cooperative: {
+      title: 'Cooperative Bulk Sales',
+      options: ['1. View active cooperatives', '2. Join a cooperative', '0. Back']
+    },
+    confirm: {
+      title: 'Alert set! You will receive SMS when your target price is reached.',
+      options: ['0. Home']
+    }
+  };
+
+  function renderScreen() {
+    const content = document.getElementById('phone-content');
+    const m = menus[ussdState];
+    let html = '<div class="phone-app-header">JosFarmConnect</div>';
+    html += '<div class="phone-menu-title">' + m.title + '</div>';
+    m.options.forEach(opt => {
+      html += '<div class="phone-option">' + opt + '</div>';
+    });
+    if (m.input) {
+      html += '<div class="phone-input-line">> <input class="phone-input" id="ussd-input" value="' + ussdInput + '" readonly /></div>';
+      html += '<div style="font-size:10px; color:#666; margin-top:4px;">Press SEND to confirm</div>';
+    }
+    if (ussdState === 'confirm') {
+      html = '<div class="phone-app-header">JosFarmConnect</div><div class="phone-confirm-box"><div style="font-size:20px; margin-bottom:6px;">✓</div><strong>Alert Set!</strong><div style="margin-top:6px; font-size:11px; color:#555;">You will receive an SMS when ' + alertCrop + ' hits ₦' + alertPrice + ' at Farin Gada.</div></div><div class="phone-option" style="margin-top:10px; text-align:center;">0. Home</div>';
+    }
+    content.innerHTML = html;
+  }
+
+  function press(key) {
+    const m = menus[ussdState];
+    if (m.input) {
+      if (key === '*' || key === '#') return;
+      if (key === '0' && ussdInput === '') return;
+      if (ussdInput.length < 8) ussdInput += key;
+      const inp = document.getElementById('ussd-input');
+      if (inp) inp.value = ussdInput;
+    } else {
+      ussdInput = key;
+      sendUSSD();
+    }
+  }
+
+  function sendUSSD() {
+    const input = ussdInput;
+    ussdInput = '';
+    if (ussdState === 'home') {
+      if (input === '1') ussdState = 'prices';
+      else if (input === '2') ussdState = 'alert_crop';
+      else if (input === '3') ussdState = 'storage';
+      else if (input === '4') ussdState = 'transport';
+      else if (input === '5') ussdState = 'sell';
+      else if (input === '6') ussdState = 'cooperative';
+    } else if (['prices','storage','transport','sell','cooperative'].includes(ussdState)) {
+      if (input === '0') ussdState = 'home';
+    } else if (ussdState === 'alert_crop') {
+      if (input === '0') ussdState = 'home';
+      else if (['1','2','3'].includes(input)) {
+        alertCrop = ['Tomatoes','Onions','Peppers'][parseInt(input)-1];
+        ussdState = 'alert_price';
+      }
+    } else if (ussdState === 'alert_price') {
+      const val = document.getElementById('ussd-input')?.value || '';
+      if (val && parseInt(val) > 0) {
+        alertPrice = val;
+        ussdState = 'alert_confirm';
+        menus.alert_confirm.title = 'Set alert for ' + alertCrop + ' at ₦' + alertPrice + '?';
+      }
+    } else if (ussdState === 'alert_confirm') {
+      if (input === '1') ussdState = 'confirm';
+      else if (input === '0') ussdState = 'alert_crop';
+    } else if (ussdState === 'confirm') {
+      ussdState = 'home';
+    }
+    renderScreen();
+  }
+
+  function resetUSSD() {
+    ussdState = 'home';
+    ussdInput = '';
+    renderScreen();
+  }
+
+  renderScreen();
+
+  // ============================================================
+  // ENHANCED DASHBOARD - INTERACTIVE FEATURES
+  // ============================================================
+
+  // ---------- 1. MARKET PRICES DATA ----------
+  let marketPrices = {
+    tomatoes: { price: 28500, delta: 12, history: [28000, 28200, 28300, 28400, 28450, 28500, 28500] },
+    onions: { price: 195000, delta: -8, history: [210000, 205000, 200000, 198000, 196000, 195500, 195000] },
+    peppers: { price: 42000, delta: 5, history: [39000, 39500, 40000, 40500, 41000, 41500, 42000] }
+  };
+
+  // ---------- 2. UPDATE DASHBOARD CARDS ----------
+  function updateDashboard() {
+    const crops = ['tomatoes', 'onions', 'peppers'];
+    crops.forEach(crop => {
+      const data = marketPrices[crop];
+      if (!data) return;
+
+      // Update price
+      const priceEl = document.getElementById('price-' + crop);
+      if (priceEl) {
+        priceEl.textContent = '₦' + data.price.toLocaleString();
+        const card = priceEl.closest('.dash-card');
+        if (card) {
+          card.classList.add('flash');
+          setTimeout(() => card.classList.remove('flash'), 600);
+        }
+      }
+
+      // Update delta
+      const deltaEl = document.getElementById('delta-' + crop);
+      if (deltaEl) {
+        const sign = data.delta >= 0 ? '+' : '';
+        const color = data.delta >= 0 ? 'var(--kimi-color-positive)' : 'var(--kimi-color-danger)';
+        const icon = data.delta >= 0 ? 
+          'M11.386 2.36129C11.7378 2.01198 12.3059 2.013 12.6565 2.36372L21.6365 11.3637C21.9872 11.7144 21.9872 12.2856 21.6365 12.6363C21.2858 12.987 20.7146 12.987 20.3639 12.6363L12.9 5.17235V21C12.9 21.4971 12.4971 21.9 12 21.9C11.5029 21.9 11.1 21.4971 11.1 21V5.17235L3.63645 12.6363C3.28574 12.987 2.71458 12.987 2.36387 12.6363C2.01316 12.2856 2.01316 11.7144 2.36387 11.3637L11.3439 2.36372L11.386 2.36129Z' :
+          'M11.386 21.6387C11.7378 21.988 12.3059 21.987 12.6565 21.6363L21.6365 12.6363C21.9872 12.2856 21.9872 11.7144 21.6365 11.3637C21.2858 11.013 20.7146 11.013 20.3639 11.3637L12.9 18.8277V3C12.9 2.50294 12.4971 2.1 12 2.1C11.5029 2.1 11.1 2.50294 11.1 3V18.8277L3.63645 11.3637C3.28574 11.013 2.71458 11.013 2.36387 11.3637C2.01316 11.7144 2.01316 12.2856 2.36387 12.6363L11.3439 21.6363L11.386 21.6387Z';
+        deltaEl.innerHTML = `
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="${icon}" fill="currentColor"/>
+          </svg>
+          ${sign}${data.delta}% this week
+        `;
+        deltaEl.style.color = color;
+      }
+    });
+
+    // Update listing count
+    const countEl = document.getElementById('listing-count');
+    if (countEl) {
+      const visible = document.querySelectorAll('.listing-row:not([style*="display: none"])').length;
+      countEl.textContent = visible + ' farmers';
+    }
+  }
+
+  // ---------- 3. REFRESH PRICES ----------
+  function refreshPrices() {
+    const crops = ['tomatoes', 'onions', 'peppers'];
+    crops.forEach(crop => {
+      const change = (Math.random() * 6) - 3;
+      const newPrice = Math.round(marketPrices[crop].price * (1 + change / 100));
+      marketPrices[crop].price = Math.max(newPrice, 1000);
+      marketPrices[crop].delta = Math.round(change);
+      marketPrices[crop].history.push(marketPrices[crop].price);
+      if (marketPrices[crop].history.length > 7) {
+        marketPrices[crop].history.shift();
+      }
+    });
+    updateDashboard();
+    showToast('🔄 Prices updated!', 'info');
+  }
+
+  // ---------- 4. SHOW PRICE HISTORY ----------
+  function showPriceHistory(crop) {
+    const data = marketPrices[crop];
+    if (!data) return;
+    const history = data.history.join(' → ');
+    const names = { tomatoes: 'Tomatoes', onions: 'Onions', peppers: 'Peppers' };
+    showToast(`📈 ${names[crop] || crop} price trend: ₦${history}`, 'info');
+  }
+
+  // ---------- 5. SEARCH FARMERS ----------
+  function searchFarmers() {
+    const query = document.getElementById('search-input').value.toLowerCase();
+    const rows = document.querySelectorAll('.listing-row');
+    rows.forEach(row => {
+      const text = row.textContent.toLowerCase();
+      row.style.display = text.includes(query) ? 'flex' : 'none';
+    });
+    updateListingCount();
+  }
+
+  // ---------- 6. FILTER FARMERS ----------
+  function filterFarmers() {
+    const filter = document.getElementById('filter-select').value;
+    const rows = document.querySelectorAll('.listing-row');
+    rows.forEach(row => {
+      const tag = row.querySelector('.tag')?.textContent || '';
+      if (filter === 'all') row.style.display = 'flex';
+      else if (filter === 'verified') row.style.display = tag === 'Verified' ? 'flex' : 'none';
+      else if (filter === 'pending') row.style.display = tag === 'Pending' ? 'flex' : 'none';
+    });
+    updateListingCount();
+  }
+
+  function updateListingCount() {
+    const countEl = document.getElementById('listing-count');
+    if (countEl) {
+      const visible = document.querySelectorAll('.listing-row:not([style*="display: none"])').length;
+      countEl.textContent = visible + ' farmers';
+    }
+  }
+
+  // ---------- 7. CONTACT FARMER ----------
+  function contactFarmer(button) {
+    const row = button.closest('.listing-row');
+    const name = row?.querySelector('.listing-name')?.textContent || 'Farmer';
+    showToast(`📞 Contacting ${name}... SMS sent!`, 'success');
+  }
+
+  // ---------- 8. BUY FROM FARMER ----------
+  function buyFromFarmer(button) {
+    const row = button.closest('.listing-row');
+    const name = row?.querySelector('.listing-name')?.textContent || 'Farmer';
+    const price = row?.querySelector('.listing-price')?.textContent || '';
+    showToast(`✅ Order placed with ${name} for ${price}!`, 'success');
+  }
+
+  // ---------- 9. BOOK TRANSPORT ----------
+  function bookTransport(button) {
+    const row = button.closest('.transport-row');
+    const route = row?.querySelector('.transport-route')?.textContent || 'Unknown route';
+    const price = row?.querySelector('.transport-price')?.textContent || '';
+    button.textContent = '✅ Booked';
+    button.classList.add('booked');
+    button.disabled = true;
+    showToast(`🚛 Transport booked: ${route} (${price})`, 'success');
+  }
+
+  // ---------- 10. PRICE ALERT ----------
+  function setPriceAlert(crop) {
+    const names = { tomatoes: 'Tomatoes', onions: 'Onions', peppers: 'Peppers' };
+    const targetPrice = prompt(`Enter target price for ${names[crop] || crop} (₦):`, marketPrices[crop]?.price || '30000');
+    if (targetPrice && parseInt(targetPrice) > 0) {
+      showToast(`🔔 Alert set! You'll be notified when ${names[crop] || crop} hits ₦${parseInt(targetPrice).toLocaleString()}`, 'success');
+    }
+  }
+
+  // ---------- 11. TOAST NOTIFICATIONS ----------
+  function showToast(message, type = 'info') {
+    let container = document.getElementById('toast-container');
+    if (!container) {
+      container = document.createElement('div');
+      container.id = 'toast-container';
+      container.className = 'toast-container';
+      document.body.appendChild(container);
+    }
+
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    const icons = { success: '✅', info: 'ℹ️', warning: '⚠️' };
+    toast.innerHTML = `
+      <span class="toast-icon">${icons[type] || 'ℹ️'}</span>
+      <span class="toast-msg">${message}</span>
+      <span class="toast-close" onclick="this.parentElement.remove()">✕</span>
+    `;
+    container.appendChild(toast);
+
+    setTimeout(() => {
+      if (toast.parentElement) toast.remove();
+    }, 5000);
+  }
+
+  // ---------- 12. AUTO-REFRESH ----------
+  setInterval(refreshPrices, 30000);
+
+  // ---------- 13. INITIALIZE ----------
+  document.addEventListener('DOMContentLoaded', function() {
+    updateDashboard();
+    // Add keyboard shortcut: press R to refresh
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'r' || e.key === 'R') {
+        if (document.getElementById('dash-panel').classList.contains('active')) {
+          refreshPrices();
+        }
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
